@@ -16,7 +16,9 @@ from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, Messa
 from pydub import AudioSegment
 from openai_helper import OpenAIHelper, localized_text
 from usage_tracker import UsageTracker
+from fetcher import Fetcher
 
+fetcher = Fetcher()
 
 def message_text(message: Message) -> str:
     """
@@ -394,7 +396,7 @@ class ChatGPTTelegramBot:
             f'New message received from user {update.message.from_user.name} (id: {update.message.from_user.id})')
         chat_id = update.effective_chat.id
         user_id = update.message.from_user.id
-        prompt = message_text(update.message)
+        prompt = await fetcher.substitute_urls(message_text(update.message))
         self.last_message[chat_id] = prompt
 
         if self.is_group_chat(update):
