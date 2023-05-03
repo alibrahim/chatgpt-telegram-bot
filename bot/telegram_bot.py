@@ -999,6 +999,10 @@ class ChatGPTTelegramBot:
         await application.bot.set_my_commands(self.group_commands, scope=BotCommandScopeAllGroupChats())
         await application.bot.set_my_commands(self.commands)
 
+    async def post_shutdown(self, application: Application) -> None:
+        """Frees acquired resources."""
+        await fetcher.close()
+
     def run(self):
         """
         Runs the bot indefinitely until the user presses Ctrl+C
@@ -1008,6 +1012,7 @@ class ChatGPTTelegramBot:
             .proxy_url(self.config['proxy']) \
             .get_updates_proxy_url(self.config['proxy']) \
             .post_init(self.post_init) \
+            .post_shutdown(self.post_shutdown) \
             .concurrent_updates(True) \
             .build()
 
